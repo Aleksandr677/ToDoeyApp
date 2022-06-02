@@ -5,20 +5,18 @@
 //  Created by Александр Христиченко on 31.05.2022.
 //
 import UIKit
+import CoreData
 
 class ToDoListViewController: UITableViewController {
     
-    var itemArray = [Item()]
+    var itemArray = [Item]()
     
-    //NSEncoder
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(dataFilePath)
-        
-        loadItems()
+        //loadItems()
     }
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -29,8 +27,9 @@ class ToDoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add an item", style: .default) { (action) in
             //add new items
-            let newItem = Item()
+            let newItem = Item(context: self.context)
             newItem.title = textField.text!
+            newItem.done = false
             self.itemArray.append(newItem)
             
             self.saveItems()
@@ -46,14 +45,12 @@ class ToDoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    //save our data using NSCoder
+    //save our data using CoreData
     func saveItems() {
-        let encoder = PropertyListEncoder()
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
-            print("Error encoding item array, \(error)")
+            print("Error saving context \(error)")
         }
         
         //refresh the teableView
@@ -61,16 +58,16 @@ class ToDoListViewController: UITableViewController {
     }
     
     //get our data using NSCoder
-    func loadItems() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error decoding item array, \(error)")
-            }
-        }
-    }
+//    func loadItems() {
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//            do {
+//                itemArray = try decoder.decode([Item].self, from: data)
+//            } catch {
+//                print("Error decoding item array, \(error)")
+//            }
+//        }
+//    }
 }
 
 //MARK: - TableView DataSource Methods
@@ -100,7 +97,7 @@ extension ToDoListViewController {
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        //add data using NSCoder
+        //add data using CoreData
         saveItems()
     }
 }
