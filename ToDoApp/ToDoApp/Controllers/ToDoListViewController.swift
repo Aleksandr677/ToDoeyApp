@@ -10,27 +10,15 @@ class ToDoListViewController: UITableViewController {
     
     var itemArray = [Item()]
     
-    let defaults = UserDefaults.standard
+    //NSEncoder
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let newItem = Item()
-        newItem.title = "Find Mike"
-        itemArray.append(newItem)
+        print(dataFilePath)
         
-        let newItem2 = Item()
-        newItem2.title = "Find Diana"
-        itemArray.append(newItem2)
-        
-        let newItem3 = Item()
-        newItem3.title = "Find Alex"
-        itemArray.append(newItem3)
-        
-        //add info from userDefaults
-//        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
-//            itemArray = items
-//        }
+        loadItems()
     }
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -45,11 +33,7 @@ class ToDoListViewController: UITableViewController {
             newItem.title = textField.text!
             self.itemArray.append(newItem)
             
-            //add info into UserDefaults
-            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
-            
-            //refresh the teableView
-            self.tableView.reloadData()
+            self.saveItems()
         }
         
         alert.addTextField { (alertTextField) in
@@ -60,6 +44,32 @@ class ToDoListViewController: UITableViewController {
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    //save our data using NSCoder
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array, \(error)")
+        }
+        
+        //refresh the teableView
+        self.tableView.reloadData()
+    }
+    
+    //get our data using NSCoder
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("Error decoding item array, \(error)")
+            }
+        }
     }
 }
 
@@ -90,9 +100,7 @@ extension ToDoListViewController {
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        //make the checkmarks work
-        tableView.reloadData()
-        
-        //print(itemArray[indexPath.row])
+        //add data using NSCoder
+        saveItems()
     }
 }
