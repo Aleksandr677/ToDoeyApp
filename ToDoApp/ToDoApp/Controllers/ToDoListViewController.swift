@@ -10,13 +10,14 @@ import CoreData
 class ToDoListViewController: UITableViewController {
     
     var itemArray = [Item]()
-    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(dataFilePath)
         
-        //loadItems()
+        loadItems()
     }
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -32,6 +33,7 @@ class ToDoListViewController: UITableViewController {
             newItem.done = false
             self.itemArray.append(newItem)
             
+            //add data using CoreData(Crud)
             self.saveItems()
         }
         
@@ -45,7 +47,7 @@ class ToDoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    //save our data using CoreData
+    //save our data using CoreData(Crud)
     func saveItems() {
         do {
             try context.save()
@@ -57,17 +59,15 @@ class ToDoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    //get our data using NSCoder
-//    func loadItems() {
-//        if let data = try? Data(contentsOf: dataFilePath!) {
-//            let decoder = PropertyListDecoder()
-//            do {
-//                itemArray = try decoder.decode([Item].self, from: data)
-//            } catch {
-//                print("Error decoding item array, \(error)")
-//            }
-//        }
-//    }
+    //get our data using CoreData(cRud)
+    func loadItems() {
+        let request: NSFetchRequest<Item> = Item.fetchRequest() //should specify the dataType
+        do {
+            itemArray = try context.fetch(request)
+        } catch  {
+            print("Error fetching data from context \(error)")
+        }
+    }
 }
 
 //MARK: - TableView DataSource Methods
@@ -97,7 +97,7 @@ extension ToDoListViewController {
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        //add data using CoreData
+        //add data using CoreData(Crud)
         saveItems()
     }
 }
