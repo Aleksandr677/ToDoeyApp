@@ -95,7 +95,11 @@ extension ToDoListViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        //delete data from the table and from CoreData (cruD)
+        context.delete(itemArray[indexPath.row])
+        itemArray.remove(at: indexPath.row)
+        
+        //itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         //add data using CoreData(Crud)
         saveItems()
