@@ -60,13 +60,16 @@ class ToDoListViewController: UITableViewController {
     }
     
     //get our data using CoreData(cRud)
-    func loadItems() {
-        let request: NSFetchRequest<Item> = Item.fetchRequest() //should specify the dataType
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+        
         do {
             itemArray = try context.fetch(request)
         } catch  {
             print("Error fetching data from context \(error)")
         }
+        
+        //refresh the teableView
+        tableView.reloadData()
     }
 }
 
@@ -103,5 +106,33 @@ extension ToDoListViewController {
         
         //add data using CoreData(Crud)
         saveItems()
+    }
+}
+
+//MARK: - UISearchBar
+
+extension ToDoListViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        request.predicate = predicate
+        
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        
+        request.sortDescriptors = [sortDescriptor]
+        
+        loadItems(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            searchBar.resignFirstResponder() //hide the keyBoard
+            print("Main Thread?", Thread.current.isMainThread)
+        }
     }
 }
