@@ -13,6 +13,7 @@
 		20298F6A2846662800DF6F2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20298F692846662800DF6F2B /* Assets.xcassets */; };
 		20298F6D2846662800DF6F2B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 20298F6B2846662800DF6F2B /* LaunchScreen.storyboard */; };
 		20298F792846693600DF6F2B /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20298F782846693600DF6F2B /* ToDoListViewController.swift */; };
+		206A6EF7284B6EA000EF9B60 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206A6EF6284B6EA000EF9B60 /* CategoryViewController.swift */; };
 		20FB4A27284921F300F3B39A /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 20FB4A25284921F300F3B39A /* DataModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		20298F6C2846662800DF6F2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		20298F6E2846662800DF6F2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		20298F782846693600DF6F2B /* ToDoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListViewController.swift; sourceTree = "<group>"; };
+		206A6EF6284B6EA000EF9B60 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		20FB4A26284921F300F3B39A /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,6 +75,7 @@
 		20CB113D2847D5FB00F4FC4E /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				206A6EF6284B6EA000EF9B60 /* CategoryViewController.swift */,
 				20298F782846693600DF6F2B /* ToDoListViewController.swift */,
 			);
 			path = Controllers;
@@ -165,6 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20FB4A27284921F300F3B39A /* DataModel.xcdatamodeld in Sources */,
+				206A6EF7284B6EA000EF9B60 /* CategoryViewController.swift in Sources */,
 				20298F612846662600DF6F2B /* AppDelegate.swift in Sources */,
 				20298F792846693600DF6F2B /* ToDoListViewController.swift in Sources */,
 				20298F632846662600DF6F2B /* SceneDelegate.swift in Sources */,

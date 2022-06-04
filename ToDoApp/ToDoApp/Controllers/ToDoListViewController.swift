@@ -55,7 +55,7 @@ class ToDoListViewController: UITableViewController {
             print("Error saving context \(error)")
         }
         
-        //refresh the teableView
+        //refresh the tableView
         self.tableView.reloadData()
     }
     
@@ -68,7 +68,7 @@ class ToDoListViewController: UITableViewController {
             print("Error fetching data from context \(error)")
         }
         
-        //refresh the teableView
+        //refresh the tableView
         tableView.reloadData()
     }
 }
@@ -99,10 +99,10 @@ extension ToDoListViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
         //delete data from the table and from CoreData (cruD)
-        context.delete(itemArray[indexPath.row])
-        itemArray.remove(at: indexPath.row)
+        //context.delete(itemArray[indexPath.row])
+        //itemArray.remove(at: indexPath.row)
         
-        //itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         //add data using CoreData(Crud)
         saveItems()
