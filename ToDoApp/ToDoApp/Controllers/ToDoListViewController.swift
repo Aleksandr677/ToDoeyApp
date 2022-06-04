@@ -10,6 +10,13 @@ import CoreData
 class ToDoListViewController: UITableViewController {
     
     var itemArray = [Item]()
+    
+    var selectedCategory: Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     
@@ -17,7 +24,7 @@ class ToDoListViewController: UITableViewController {
         super.viewDidLoad()
         print(dataFilePath)
         
-        loadItems()
+        hideKeyboardWhenTappedAround()
     }
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -26,23 +33,27 @@ class ToDoListViewController: UITableViewController {
         
         let alert = UIAlertController(title: "Add a new item", message: "", preferredStyle: .alert)
         
-        let action = UIAlertAction(title: "Add an item", style: .default) { (action) in
+        let actionAdd = UIAlertAction(title: "Add an item", style: .default) { (action) in
             //add new items
             let newItem = Item(context: self.context)
             newItem.title = textField.text!
             newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
             
             //add data using CoreData(Crud)
             self.saveItems()
         }
         
+        let actionCancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "create a new item"
             textField = alertTextField
         }
         
-        alert.addAction(action)
+        alert.addAction(actionCancel)
+        alert.addAction(actionAdd)
         
         present(alert, animated: true, completion: nil)
     }
@@ -60,7 +71,15 @@ class ToDoListViewController: UITableViewController {
     }
     
     //get our data using CoreData(cRud)
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), with predicate: NSPredicate? = nil) {
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
         
         do {
             itemArray = try context.fetch(request)
@@ -124,7 +143,7 @@ extension ToDoListViewController: UISearchBarDelegate {
         
         request.sortDescriptors = [sortDescriptor]
         
-        loadItems(with: request)
+        loadItems(with: request, with: predicate)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -134,5 +153,19 @@ extension ToDoListViewController: UISearchBarDelegate {
             searchBar.resignFirstResponder() //hide the keyBoard
             print("Main Thread?", Thread.current.isMainThread)
         }
+    }
+}
+
+//MARK: - GestureRecognizer
+
+extension ToDoListViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
 }

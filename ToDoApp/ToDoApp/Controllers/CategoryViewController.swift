@@ -101,4 +101,12 @@ extension CategoryViewController {
         
         performSegue(withIdentifier: "goToItems", sender: self)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ToDoListViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
+        }
+    }
 }
