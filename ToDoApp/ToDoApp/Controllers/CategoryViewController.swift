@@ -7,9 +7,8 @@
 
 import UIKit
 import CoreData
-import SwipeCellKit
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     var categoryArray = [Category]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -18,8 +17,6 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print(dataFilePath)
-        
-        tableView.rowHeight = 65.0
         
         loadCategories()
     }
@@ -77,6 +74,17 @@ class CategoryViewController: UITableViewController {
         //refresh the tableView
         tableView.reloadData()
     }
+    
+    //delete our data from swipe
+    override func updateModel(at indexPath: IndexPath) {
+        self.context.delete(self.categoryArray[indexPath.row])
+        self.categoryArray.remove(at: indexPath.row)
+        do {
+            try self.context.save()
+        } catch {
+            print("Error saving context \(error)")
+        }
+    }
 }
 
 //MARK: - TableVIew DataSource
@@ -87,9 +95,8 @@ extension CategoryViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! SwipeTableViewCell
-        cell.delegate = self
         
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         let category = categoryArray[indexPath.row]
         cell.textLabel?.text = category.name
         
@@ -112,37 +119,5 @@ extension CategoryViewController {
         if let indexPath = tableView.indexPathForSelectedRow {
             destinationVC.selectedCategory = categoryArray[indexPath.row]
         }
-    }
-}
-
-//MARK: - SwipeTableViewCellDelegate
-
-extension CategoryViewController: SwipeTableViewCellDelegate {
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        
-        guard orientation == .right else { return nil }
-        
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-            
-            //delete data from the table and from CoreData (cruD)
-            self.context.delete(self.categoryArray[indexPath.row])
-            self.categoryArray.remove(at: indexPath.row)
-            do {
-                try self.context.save()
-            } catch {
-                print("Error saving context \(error)")
-            }
-        }
-        
-        // customize the action appearance
-        deleteAction.image = UIImage(named: "delete-icon")
-        
-        return [deleteAction]
-    }
-    
-    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
-        var options = SwipeOptions()
-        options.expansionStyle = .destructive
-        return options
     }
 }
