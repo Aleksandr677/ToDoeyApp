@@ -6,6 +6,7 @@
 //
 import UIKit
 import CoreData
+import ChameleonFramework
 
 class ToDoListViewController: SwipeTableViewController {
     
@@ -23,6 +24,11 @@ class ToDoListViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print(dataFilePath)
+        
+        navigationController?.tabBarItem.isEnabled = true
+        navigationController?.tabBarItem.badgeColor = .white
+        
+        tableView.separatorStyle = .none
         
         hideKeyboardWhenTappedAround()
     }
@@ -115,6 +121,11 @@ extension ToDoListViewController {
         
         let item = itemArray[indexPath.row]
         cell.textLabel?.text = item.title
+        
+        let colorCategory = UIColor(hexString: selectedCategory?.color)
+        let color = colorCategory!.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(itemArray.count * 4))
+        cell.backgroundColor = color
+        cell.textLabel?.textColor = ContrastColorOf(backgroundColor: color!, returnFlat: true)
         
         cell.accessoryType = item.done == true ? .checkmark : .none
         
