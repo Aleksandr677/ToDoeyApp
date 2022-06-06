@@ -10,6 +10,8 @@ import ChameleonFramework
 
 class ToDoListViewController: SwipeTableViewController {
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var itemArray = [Item]()
     
     var selectedCategory: Category? {
@@ -25,12 +27,23 @@ class ToDoListViewController: SwipeTableViewController {
         super.viewDidLoad()
         print(dataFilePath)
         
-        navigationController?.tabBarItem.isEnabled = true
-        navigationController?.tabBarItem.badgeColor = .white
-        
         tableView.separatorStyle = .none
         
         hideKeyboardWhenTappedAround()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let colorHex = selectedCategory?.color {
+            guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller doesn't exists" ) }
+            navBar.backgroundColor = UIColor(hexString: colorHex)
+            navBar.tintColor = ContrastColorOf(backgroundColor: UIColor(hexString: colorHex), returnFlat: true)
+            title = selectedCategory!.name
+            navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(backgroundColor: UIColor(hexString: colorHex), returnFlat: true)]
+            
+            searchBar.barTintColor = UIColor(hexString: colorHex)
+            searchBar.searchTextField.backgroundColor = FlatWhite()
+        }
     }
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {

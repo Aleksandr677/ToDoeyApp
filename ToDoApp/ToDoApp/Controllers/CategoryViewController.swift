@@ -19,9 +19,17 @@ class CategoryViewController: SwipeTableViewController {
         super.viewDidLoad()
         print(dataFilePath)
         
+        view.backgroundColor = UIColor(hexString: "61BBFF")
+        
         loadCategories()
         
         tableView.separatorStyle = .none
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller doesn't exists" ) }
+        navBar.backgroundColor = UIColor(hexString: "61BBFF")
     }
     
     //Add a new category
